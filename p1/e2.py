@@ -22,23 +22,23 @@ def ordenar_seleccion(matriz,tam):
         matriz[i]=aux
 
 #Variables
-lista=[]
-cn=int(raw_input("Cantidad de numeros a ingresar: "))
+matriz=[]
+tam=int(raw_input("Cantidad de numeros a ingresar: "))
 
-for i in range(0,cn):
-    lista.append(int(random.randint(0,100)))
+for i in range(0,tam):
+    matriz.append(int(random.randint(0,100)))
 
 inicio_burbuja = time.time()
-ordenar_burbuja(lista,cn)
+ordenar_burbuja(matriz,tam)
 fin_burbuja = time.time()
 tiempo_total_burbuja = fin_burbuja - inicio_burbuja
-print ("El timpo que tarda la funcion de ordenado por burbuja es de ", tiempo_total_burbuja)
+print "El timpo que tarda la funcion de ordenado por burbuja es de ", tiempo_total_burbuja
 
 
 inicio_seleccion = time.time()
-ordenar_seleccion(lista,cn)
+ordenar_seleccion(matriz,tam)
 fin_seleccion = time.time()
 tiempo_total_seleccion = fin_seleccion - inicio_seleccion
-print ("El timpo que tarda la funcion de ordenado por seleccion es de ", tiempo_total_seleccion)
+print "El timpo que tarda la funcion de ordenado por seleccion es de", tiempo_total_seleccion
 
 
