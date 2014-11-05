@@ -1,0 +1,14 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" contenxt="text/html">
+	<title> Práctica 3 DAI </title>
+</head>
+<body>
+	<h1> Formulario de incripción </h1>
+	<form name="main" method="post">
+		$if not form.valid: <p class="errror">Corrige los campos marcados.</p>
+		$:form.render()
+	</form>
+</body>
