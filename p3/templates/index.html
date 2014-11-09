@@ -13,7 +13,15 @@
   </head>
   <body>
   	<section id="cabecera">
-      ${formu}
+      <form name="login" method="POST">
+        % if mensaje:
+          ${mensaje}
+        % endif
+        
+        % if form:
+          ${form.render()}
+        % endif
+      </form>
   	</section>
     <section id="contenedor">
     	<section id="menu">
@@ -24,7 +32,7 @@
     	</section>
     </section>
     <section id="footer">
-		© Carlos Campos - DAI UGR
+		© Carlos Campos - DAI - UGR
 	</section>	
   </body>
 </html>
