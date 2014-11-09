@@ -1,0 +1,60 @@
+body {
+	background-color: rgb(250,250,250);
+}
+
+header {
+	background-color: rgb(30,200,200);
+	height: 100px;
+	padding: 10px;
+	color: white;
+}
+
+header a{
+	color: rgb(245,245,245);
+}
+
+header a:hover{
+	color: rgb(245,245,245);
+}
+
+header form {
+	float: right;
+}
+
+header input, header button {
+	margin-left: 10px;
+	color: rgb(50,50,50);
+}
+#col-left {
+	background-color: rgb(248,248,248);
+}
+
+#col-right {
+	border: 1px solid rgb(240,240,240);
+	background-color: white;
+	height: 500px;
+	overflow: auto;
+}
+
+footer{
+	text-align: center;
+	margin-top: 10px;
+}
+
+a {
+	color: rgb(50,50,50);
+}
+
+a:hover{
+	color: rgb(80,80,80);
+}
+
+ul, ol {
+	list-style: none;
+	margin-left: -30px;
+	margin-bottom: 30px;
+}
+
+li {
+	margin-bottom: 2px;
+}
