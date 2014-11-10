@@ -34,7 +34,7 @@
 				<ul>
 					<li><a href="/">Inicio</a></li>
 					% if message:
-						<li><a href="/pagina1">Página 1</a></li>
+						<li><a href="/datos">Datos</a></li>
 						<li><a href="/pagina2">Página 2</a></li>
 						<li><a href="/pagina3">Página 3</a></li>
 						<li><a href="/pagina4">Página 4</a></li>
@@ -52,11 +52,8 @@
 				% endif
 
 				% if not message:
-					<p> Para poder utilizar la aplicación debe e autentificarse </p>
+					<p> Para poder utilizar la aplicación debe de autentificarse </p>
 				% endif
-
-				<p> Bienvenido a la página web de Carlos Campos realizada para la asignatura de <strong>Desarrollo de Aplicaciones para Internet
-				</strong>
 
 				% if content:
 					${content}

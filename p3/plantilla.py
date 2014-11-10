@@ -3,6 +3,7 @@
 ## Autor: Carlos Campos Fuentes
 ## 		  http://ccamposfuentes.es
 import web
+import anydbm
 from web import form
 from web.contrib.template import render_mako
 
@@ -10,7 +11,7 @@ web.config.debug = False
 
 urls = ('/', 'index',
 		'/logout', 'logout',
-		'/pagina1', 'pagina1',
+		'/datos', 'datos',
 		'/pagina2', 'pagina2',
 		'/pagina3', 'pagina3',
 		'/pagina4', 'pagina4'
@@ -45,21 +46,32 @@ def insert_last():
 			</ol> \
 		")
 
-lorem = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla accumsan sit amet felis at mattis. \
-	Sed nec congue dolor, ut efficitur leo. Nam quis ante at augue venenatis vestibulum. Integer sodales iaculis nunc a dapibus. \
-	Sed facilisis mattis nunc eu viverra. Nullam venenatis cursus arcu eu pretium. Nam lobortis neque mi, porttitor placerat massa tempus id. \
-	Maecenas quis tincidunt nunc. Nulla fermentum massa quis aliquam viverra. In tincidunt pharetra hendrerit. Curabitur non tincidunt metus. \
-	Nunc sodales arcu dui, at elementum dolor sollicitudin eu. Donec id congue velit. Aenean placerat leo ac est sagittis finibus. \
-	Sed malesuada sodales nibh sit amet convallis. Curabitur ultrices pulvinar enim eget convallis. Praesent ultricies pretium dui, \
-	at tincidunt justo tristique molestie. Donec ornare, enim vel ullamcorper sodales, justo metus dictum metus, \
-	vel sagittis nibh tortor vel leo. Maecenas id nisl et metus volutpat elementum. Cras dignissim erat non ex ultrices imperdiet. \
-	Aliquam pharetra condimentum ligula at molestie. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. \
-	Curabitur non libero vitae dolor vestibulum maximus. Vestibulum egestas nibh urna, vitae vehicula lectus consectetur id. Sed et elit eros. \
-	Quisque sodales venenatis arcu condimentum consequat. Sed leo quam, maximus eu metus vulputate, posuere varius risus. \
-	Praesent ac facilisis leo. Nam non lacus enim. Aliquam nisi enim, maximus in risus eget, porta egestas neque. \
-	Pellentesque fermentum sit amet lacus quis cursus. In volutpat sodales ipsum, eget dictum erat tincidunt quis. \
-	Nunc malesuada odio sapien, et dapibus tellus imperdiet sit amet. Duis interdum efficitur orci, non rutrum augue ornare at. \
-	Fusce suscipit turpis eget turpis auctor, ac fermentum risus euismod."
+def insert_data():
+	data = {}
+	db = anydbm.open('db', 'c')
+	# Recuperamos los datos de nuestra base de datos
+	for k, v in db.iteritems():
+		data[k] = v
+	db.close()
+
+	# Creamos cadena de texto
+	return str("\
+				<ul>\
+					<li> Nombre: "+ str(data["nombre"]) +"</li>\
+					<li> Apellidos: "+ str(data["apellidos"]) +"</li>\
+					<li> DNI: "+ str(data["dni"]) +"</li>\
+	"#				<li> Correo: "+str(data["correo"]) +"</li>\
+	"				<li> VISA: "+ str(data["visa"]) +"</li>\
+	"#				<li> Día: "+ str(data["dia"]) +"</li>\
+	#				<li> Mes: "+ str(data["mes"]) +"</li>\
+	#				<li> Año: "+ str(data["ano"]) +"</li>\
+	#				<li> Descripción: "+ str(data["descripcion"]) +"</li>\
+	#				<li> Contraseña: "+ str(data["contrasena"]) +"</li>\
+	#				<li> Contraseña2: "+ str(data["contrasena2"]) +"</li>\
+	"			</ul> \
+				")
+
+
 
 class index:
 	def GET(self):
@@ -81,18 +93,21 @@ class index:
 			session.primera = "null"
 			session.segunda = "null"
 			session.tercera = "null"
-			return templates.template(titulo = "Inicio", message = insert_message(session.user), ultimas = insert_last())
+			return templates.template(titulo = "Inicio", 
+				message = insert_message(session.user), ultimas = insert_last())
 
-class pagina1:
+class datos:
 	def GET(self):
 		if 'user' not in session:
 			form = formLogin()
-			return templates.template(titulo = "Pagina 1", form = form)
+			return templates.template(titulo = "Datos", form = form)
 		else:
 			session.tercera = session.segunda
 			session.segunda = session.primera
-			session.primera = "<a href='pagina1'>Pagina 1</a>"
-			return templates.template(titulo = "Pagina 1", message = insert_message(session.user), content = str(lorem), ultimas = insert_last())
+			session.primera = "<a href='datos'>Datos</a>"
+			return templates.template(titulo = "Datos", 
+				message = insert_message(session.user), content = insert_data(), ultimas = insert_last())
+
 
 class pagina2:
 	def GET(self):
@@ -103,7 +118,8 @@ class pagina2:
 			session.tercera = session.segunda
 			session.segunda = session.primera
 			session.primera = "<a href='pagina2'>Pagina 2</a>"
-			return templates.template(titulo = "Pagina 2", message = insert_message(session.user), content = str(lorem), ultimas = insert_last())
+			return templates.template(titulo = "Pagina 2", 
+				message = insert_message(session.user), ultimas = insert_last())
 
 class pagina3:
 	def GET(self):
@@ -114,7 +130,8 @@ class pagina3:
 			session.tercera = session.segunda
 			session.segunda = session.primera
 			session.primera = "<a href='pagina3'>Pagina 3</a>"
-			return templates.template(titulo = "Pagina 3", message = insert_message(session.user), content = str(lorem), ultimas = insert_last())
+			return templates.template(titulo = "Pagina 3", 
+				message = insert_message(session.user), ultimas = insert_last())
 		
 class pagina4:
 	def GET(self):
@@ -125,7 +142,8 @@ class pagina4:
 			session.tercera = session.segunda
 			session.segunda = session.primera
 			session.primera = "<a href='pagina4'>Pagina 4</a>"
-			return templates.template(titulo = "Pagina 4", message = insert_message(session.user), content = str(lorem), ultimas = insert_last())
+			return templates.template(titulo = "Pagina 4", 
+				message = insert_message(session.user), ultimas = insert_last())
 
 class logout:
 	def GET(self):
