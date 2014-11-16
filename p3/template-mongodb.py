@@ -5,6 +5,7 @@
 import web
 import anydbm
 import re
+from pymongo import MongoClient
 from web import form
 from web.contrib.template import render_mako
 
@@ -68,7 +69,7 @@ formulario = form.Form(
 
 
 formLogin = form.Form(
-	form.Textbox('username', form.notnull, maxlenght="30", description="Usuario "),
+	form.Textbox('username', form.notnull, maxlenght="30", description="Correo "),
 	form.Password('passwd', maxlenght="15", description="Contraseña "),
 	form.Button("Login")
 	)
@@ -93,29 +94,30 @@ def insert_last():
 
 def read_bd():
 	data = {}
-	db = anydbm.open('db', 'r')
-	# Recuperamos los datos de nuestra base de datos
-	for k, v in db.iteritems():
-		data[k] = v
-	db.close()
-	return data
+	conn = MongoClient('mongodb://localhost:27017/')
+	db = conn.app.usuarios
+	items = db.find_one()
+	conn.close()
+
+	return items
+
 
 def insert_data():
 	data = read_bd()
 
 	# Creamos cadena de texto
 	return str("\
-				<ul>\
-					<li> Nombre: "+ data["nombre"] +"</li>\
-					<li> Apellidos: "+ data["apellidos"] +"</li>\
-					<li> DNI: "+ data["dni"] +"</li>\
-					<li> Correo: "+data["correo"] +"</li>\
-					<li> VISA: "+ data["visa"] +"</li>\
-					<li> Fecha de Nacimiento: "+ data["dia"] +"/"+ data["mes"] +"/"+ data["ano"] +"</li>\
-					<li> Descripcion: "+ data["descripcion"] + "</li>\
-				</ul> \
-				<a href='/modifica-datos'>Modificar datos</a>\
-				")
+		<ul>\
+			<li> Nombre: "+ data["nombre"] +"</li>\
+			<li> Apellidos: "+ data["apellidos"] +"</li>\
+			<li> DNI: "+ data["dni"] +"</li>\
+			<li> Correo: "+data["correo"] +"</li>\
+			<li> VISA: "+ data["visa"] +"</li>\
+			<li> Fecha de Nacimiento: "+ data["dia"] +"/"+ data["mes"] +"/"+ data["ano"] +"</li>\
+			<li> Descripcion: "+ data["descripcion"] + "</li>\
+		</ul> \
+		<a href='/modifica-datos'>Modificar datos</a>\
+		")
 
 def insert_form_data():
 	data = read_bd()
@@ -134,10 +136,10 @@ def insert_form_data():
 		form.Dropdown('mes', range(1,13), description="Mes: ", value=int(data["mes"])),
 		form.Dropdown('ano', range(1900, 2015), description="Año: ", value=int(data["ano"])),
 		form.Textarea("descripcion", maxlenght="120", description="Descripción: ", value=str(data["descripcion"])),
-		form.Password("contrasena", form.notnull,
+		form.Password("contrasena",
 			form.Validator("La contraseña debe de tener 8 caracteres como mínimo.", lambda i: len(str(i))>7),
 			maxlenght="8", description="Contraseña: "),
-		form.Password("contrasena2", form.notnull,
+		form.Password("contrasena2",
 			form.Validator("La contraseña debe de tener 8 caracteres como mínimo.", lambda i: len(str(i))>7),
 			maxlenght="8", description="Vuelve a introducir la contraseña: "),
 		form.Radio("pago", ["PayPal", "Tarjeta"], form.notnull, description="Forma de pago: ", checked=str(data["pago"])),
@@ -173,38 +175,55 @@ class index:
 
 		# Formulario de registro
 		if formR.validates():
+			conn = MongoClient('mongodb://localhost:27017')
+			db = conn.app.usuarios
+
+			# Añado entrada a la bd
 			aux = web.input()
-			db = anydbm.open('db','c')
 
-			# Grabo los datos en la base de datos
-			db["nombre"] = str(aux.nombre)
-			db["apellidos"] = str(aux.apellidos)
-			db["dni"] = str(aux.dni)
-			db["correo"] = str(aux.correo)
-			db["visa"] = str(aux.visa)
-			db["dia"] = str(aux.dia)
-			db["mes"] = str(aux.mes)
-			db["ano"] = str(aux.ano)
-			db["descripcion"] = str(aux.descripcion)
-			db["contrasena"] = str(aux.contrasena)
-			db["contrasena2"] = str(aux.contrasena2)
-			db["pago"] = str(aux.pago)
+			db_usuarios = {
+				"nombre": aux.nombre,
+				"apellidos": aux.apellidos,
+				"dni": aux.dni,
+				"correo": aux.correo,
+				"visa": aux.visa,
+				"dia": aux.dia,
+				"mes": aux.mes,
+				"ano": aux.ano,
+				"descripcion": aux.descripcion,
+				"contrasena": aux.contrasena,
+				"contrasena2": aux.contrasena2,
+				"pago": aux.pago,
+			}
 
-			# Cerramos la base de datos
-			db.close()
+			db.insert(db_usuarios)
 
+			items = db.find_one()
+
+			#Cerramos la conexión
+			conn.close()
+
+			print items
 			raise web.seeother('/')
 
 		# Formulario de login
 		if form.validates():
 			aux = web.input()
-			user = aux.username
-			session.user = user
-			session.primera = " "
-			session.segunda = " "
-			session.tercera = " "
-			return templates.template(titulo = "Inicio",
-				message = insert_message(session.user), ultimas = insert_last())
+
+			#Comprobamos el usuario y contraseña
+			conn = MongoClient('mongodb://127.0.0.1:27017')
+			db = conn.app.usuarios
+			usuario = db.find_one({"correo": aux.username})
+
+			if (usuario["contrasena"] == aux.passwd):
+				session.user = usuario["nombre"]
+				session.primera = " "
+				session.segunda = " "
+				session.tercera = " "
+				return templates.template(titulo = "Inicio",
+					message = insert_message(session.user), ultimas = insert_last())
+			else:
+				return templates.template(titulo = "Inicio", form = form, formR = formR)
 
 		if not form.validates() or formR.validates():
 			return templates.template(titulo = "Inicio", form = form, formR = formR)
@@ -239,24 +258,48 @@ class modifica:
 			raise web.seeother('/modifica-datos')
 		else:
 			aux = web.input()
-			db = anydbm.open('db','c')
+			conn = MongoClient('mongodb://localhost:27017')
+			db = conn.app.usuarios
+
+			last_item = db.find_one()
+			last_id = last_item["_id"]
 
 			# Grabo los datos en la base de datos
-			db["nombre"] = str(aux.nombre)
-			db["apellidos"] = str(aux.apellidos)
-			db["dni"] = str(aux.dni)
-			db["correo"] = str(aux.correo)
-			db["visa"] = str(aux.visa)
-			db["dia"] = str(aux.dia)
-			db["mes"] = str(aux.mes)
-			db["ano"] = str(aux.ano)
-			db["descripcion"] = str(aux.descripcion)
-			db["contrasena"] = str(aux.contrasena)
-			db["contrasena2"] = str(aux.contrasena2)
-			db["pago"] = str(aux.pago)
+			if aux.contrasena != "":
+				db_usuarios = {
+					"nombre": str(aux.nombre),
+					"apellidos": str(aux.apellidos),
+					"dni": str(aux.dni),
+					"correo": str(aux.correo),
+					"visa": str(aux.visa),
+					"dia": str(aux.dia),
+					"mes": str(aux.mes),
+					"ano": str(aux.ano),
+					"descripcion": str(aux.descripcion),
+					"contrasena": str(aux.contrasena),
+					"contrasena2": str(aux.contrasena2),
+					"pago": str(aux.pago),
+				}
+			else:
+				db_usuarios = {
+					"nombre": str(aux.nombre),
+					"apellidos": str(aux.apellidos),
+					"dni": str(aux.dni),
+					"correo": str(aux.correo),
+					"visa": str(aux.visa),
+					"dia": str(aux.dia),
+					"mes": str(aux.mes),
+					"ano": str(aux.ano),
+					"descripcion": str(aux.descripcion),
+					"contrasena": str(last_item["contrasena"]),
+					"contrasena2": str(last_item["contrasena2"]),
+					"pago": str(aux.pago),
+				}
+
+			db.update({"_id":last_id},db_usuarios)
 
 			# Cerramos la base de datos
-			db.close()
+			conn.close()
 
 			raise web.seeother('/datos')
 
