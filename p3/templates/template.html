@@ -35,15 +35,16 @@
 					<li><a href="/">Inicio</a></li>
 					% if message:
 						<li><a href="/datos">Datos</a></li>
-						<li><a href="/pagina2">Página 2</a></li>
+						<li><a href="/modifica-datos">Modificar datos</a></li>
 						<li><a href="/pagina3">Página 3</a></li>
 						<li><a href="/pagina4">Página 4</a></li>
 					% endif
 				</ul>
-
-				<h5> ULTIMAS PAG. VISITADAS </h5>
-				% if ultimas:
-					${ultimas}
+				% if message:
+					<h5> ULTIMAS PAG. VISITADAS </h5>
+					% if ultimas:
+						${ultimas}
+					% endif
 				% endif
 			</section>
 			<section id="col-right" class="col-md-10 col-xs-10">
@@ -52,17 +53,29 @@
 				% endif
 
 				% if not message:
-					<p> Para poder utilizar la aplicación debe de autentificarse </p>
-				% endif
+					<p> Para poder utilizar la aplicación debe de autentificarse, si aún no tienes cuenta,
+					puedes registrarte rellenando el siguiente formulario.</p>
+					<form name="login" method="POST">
+						% if formR:
+								${formR.render()}
+						% endif
+					</form>
+					% endif
 
 				% if content:
 					${content}
+				% endif
+
+				% if formEdit:
+					<form method="POST" name="editDataForm">
+						${formEdit}
+					</form>
 				% endif
 			</section>
 		</section>
 	</div>
 	<footer class="col-md-12">
-		<p> © <a href="http://ccamposfuentes.es">Carlos Campos</a> - DAI - UGR </p>
+		<p> © <a href="http://ccamposfuentes.es" target="_blank">Carlos Campos</a> - DAI - UGR </p>
 	</footer>
 
 	<!-- Librerias -->

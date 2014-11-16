@@ -17,4 +17,4 @@ for k, v in db.iteritems():
 # Close when done.
 db.close()
 
-print value['correo']
+print value

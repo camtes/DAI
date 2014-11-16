@@ -31,7 +31,7 @@ templates = render_mako(
 # Formularios
 
 formulario = form.Form(
-	form.Textbox('nombre', form.notnull, maxlenght="30", description="Nombre: "),
+	form.Textbox('nombre', [("value", "hola")], form.notnull, maxlenght="30", description="Nombre: "),
 	form.Textbox('apellidos', form.notnull, maxlenght="50", description="Apellidos: "),
 	form.Textbox("dni", form.notnull, maxlenght="8", description="DNI: "),
 	form.Textbox('correo', form.notnull,
@@ -162,41 +162,16 @@ class index:
 	def GET(self):
 		if 'user' not in session:
 			form = formLogin()
-			formRegistro = formulario()
-			return templates.template(titulo = "Inicio", form = form, formR = formRegistro)
+			return templates.template(titulo = "Inicio", form = form)
 		else:
 			return templates.template(titulo = "Inicio", message = insert_message(session.user), ultimas = insert_last())
 
 	def POST(self):
 		form = formLogin()
-		formR = formulario()
 
-		# Formulario de registro
-		if formR.validates():
-			aux = web.input()
-			db = anydbm.open('db','c')
-
-			# Grabo los datos en la base de datos
-			db["nombre"] = str(aux.nombre)
-			db["apellidos"] = str(aux.apellidos)
-			db["dni"] = str(aux.dni)
-			db["correo"] = str(aux.correo)
-			db["visa"] = str(aux.visa)
-			db["dia"] = str(aux.dia)
-			db["mes"] = str(aux.mes)
-			db["ano"] = str(aux.ano)
-			db["descripcion"] = str(aux.descripcion)
-			db["contrasena"] = str(aux.contrasena)
-			db["contrasena2"] = str(aux.contrasena2)
-			db["pago"] = str(aux.pago)
-
-			# Cerramos la base de datos
-			db.close()
-
-			raise web.seeother('/')
-
-		# Formulario de login
-		if form.validates():
+		if not form.validates():
+			return templates.template(form = form)
+		else:
 			aux = web.input()
 			user = aux.username
 			session.user = user
@@ -205,9 +180,6 @@ class index:
 			session.tercera = " "
 			return templates.template(titulo = "Inicio",
 				message = insert_message(session.user), ultimas = insert_last())
-
-		if not form.validates() or formR.validates():
-			return templates.template(titulo = "Inicio", form = form, formR = formR)
 
 class datos:
 	def GET(self):

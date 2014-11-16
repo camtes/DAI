@@ -81,7 +81,7 @@ class myForm:
 			db["apellidos"] = str(aux.apellidos)
 			db["dni"] = str(aux.dni)
 			db["correo"] = str(aux.correo)
-			db["visa"] = str(aux.mes)
+			db["visa"] = str(aux.visa)
 			db["dia"] = str(aux.dia)
 			db["mes"] = str(aux.mes)
 			db["ano"] = str(aux.ano)
