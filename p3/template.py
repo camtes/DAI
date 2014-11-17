@@ -1,6 +1,7 @@
 ## -*- coding: utf-8 -*-
-##
-## Autor: Carlos Campos Fuentes
+#
+# Mako Anydbm
+# Práctica 3 - DAI - Carlos Campos Fuentes
 
 import web
 import anydbm

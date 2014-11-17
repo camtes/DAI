@@ -1,6 +1,7 @@
 ## -*- coding: utf-8 -*-
-##
-## Autor: Carlos Campos Fuentes
+#
+# Mako MongoDB
+# Práctica 3 - DAI - Carlos Campos Fuentes
 
 import web
 import anydbm
@@ -92,18 +93,18 @@ def insert_last():
 			</ol> \
 		")
 
-def read_bd():
+def read_bd(id):
 	data = {}
 	conn = MongoClient('mongodb://localhost:27017/')
 	db = conn.app.usuarios
-	items = db.find_one()
+	items = db.find_one({"_id": id})
 	conn.close()
 
 	return items
 
 
-def insert_data():
-	data = read_bd()
+def insert_data(id):
+	data = read_bd(id)
 
 	# Creamos cadena de texto
 	return str("\
@@ -119,8 +120,8 @@ def insert_data():
 		<a href='/modifica-datos'>Modificar datos</a>\
 		")
 
-def insert_form_data():
-	data = read_bd()
+def insert_form_data(id):
+	data = read_bd(id)
 
 	formulario = form.Form(
 		form.Textbox('nombre', [("value", "hola")], form.notnull, maxlenght="30", description="Nombre: ", value=str(data["nombre"])),
@@ -198,12 +199,9 @@ class index:
 
 			db.insert(db_usuarios)
 
-			items = db.find_one()
-
 			#Cerramos la conexión
 			conn.close()
 
-			print items
 			raise web.seeother('/')
 
 		# Formulario de login
@@ -217,6 +215,7 @@ class index:
 
 			if (usuario["contrasena"] == aux.passwd):
 				session.user = usuario["nombre"]
+				session.user_id = usuario["_id"]
 				session.primera = " "
 				session.segunda = " "
 				session.tercera = " "
@@ -234,7 +233,7 @@ class datos:
 		session.segunda = session.primera
 		session.primera = "<a href='datos'>Datos</a>"
 		return templates.template(titulo = "Datos",
-			message = insert_message(session.user), content = insert_data(), ultimas = insert_last())
+			message = insert_message(session.user), content = insert_data(session.user_id), ultimas = insert_last())
 
 
 class modifica:
@@ -243,7 +242,7 @@ class modifica:
 			form = formLogin()
 			return templates.template(titulo = "Modificar datos", form = form)
 		else:
-			form = insert_form_data()
+			form = insert_form_data(session.user_id)
 			session.tercera = session.segunda
 			session.segunda = session.primera
 			session.primera = "<a href='modifica-datos'>Modificar datos</a>"
