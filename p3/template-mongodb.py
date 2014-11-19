@@ -6,6 +6,7 @@
 import web
 import anydbm
 import re
+import warnings
 from pymongo import MongoClient
 from web import form
 from web.contrib.template import render_mako
@@ -179,7 +180,7 @@ class index:
 			conn = MongoClient('mongodb://localhost:27017')
 			db = conn.app.usuarios
 
-			# Añado entrada a la bd
+			# Añado entrada a la bd form.d.nombre = aux.nombre
 			aux = web.input()
 
 			db_usuarios = {
@@ -201,7 +202,7 @@ class index:
 
 			#Cerramos la conexión
 			conn.close()
-
+			warnings.warn('Usuario creado correctamente')
 			raise web.seeother('/')
 
 		# Formulario de login
