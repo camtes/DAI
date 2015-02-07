@@ -1,0 +1,190 @@
+<!--
+Autor: Carlos Campos Fuentes
+http://ccamposfuentes.es
+-->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>Mi Periodico</title>
+  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css">
+  <link rel="stylesheet" href="../static/css/style.css">
+</head>
+<body>
+  <header class="col-md-12">
+    <div class="col-sm-6">
+      <a href="/"> DAI - Carlos Campos</a>
+    </div>
+  </header>
+  <div class="container-fluid">
+    <section class="row">
+      <section id="col-left" class="col-md-2 col-xs-2">
+        <h5> MENU </h5>
+        <ul>
+          <li><a href="/">Inicio</a></li>
+          % if message:
+          <li><a href="/noticias">Noticias</a></li>
+          <li><a href="/graficos">Gráficos</a></li>
+          <ul>
+            <li><a href="/graficos/insertar">Insertar</a></li>
+          </ul>
+          <li><a href="/mapa">Mapa</a></li>
+          <li><a href="/twitter">Twitter</a></li>
+          <li> -- </li>
+          <li><a href="/datos">Datos</a></li>
+          <li><a href="/modifica-datos">Modificar datos</a></li>
+          <li><a href="/logout"> Salir </a></li>
+          % endif
+
+        </section>
+        <section id="col-right" class="col-md-10 col-xs-10">
+          % if titulo:
+          <h1> ${titulo} </h1>
+          % endif
+
+          % if form:
+            <h2> Datos para gráfico 1</h2>
+
+            <form name="insert_g1" method="POST">
+              ${form}
+            </form>
+
+          % else:
+            <div id="grafico1"></div>
+            <br >
+            <div id="grafico2"></div>
+            <br >
+            <div id="grafico3"></div>
+          % endif
+        </section>
+      </section>
+    </div>
+    <footer class="col-md-12">
+      <p> © <a href="http://ccamposfuentes.es" target="_blank">Carlos Campos</a> - DAI - UGR </p>
+    </footer>
+
+    <!-- Librerias -->
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.0/js/bootstrap.min.js"></script>
+    <script src="http://code.highcharts.com/highcharts.js"></script>
+    <script>
+      $(function () {
+        //Gráfico 1
+        $('#grafico1').highcharts({
+          chart: {
+            type: 'bar'
+          },
+          title: {
+            text: 'Lineas escritas'
+          },
+          xAxis: {
+            categories: ['Evenge', 'GestorTaller', 'Calculadora met. basal']
+          },
+          yAxis: {
+            title: {
+              text: 'Cantidad de líneas escritas'
+            }
+          },
+          series: [
+
+          %if datos:
+            %for k in datos:
+              ${k}
+            %endfor
+          %endif
+          ]
+        });
+
+        // Gráfico 2
+        $('#grafico2').highcharts({
+          chart: {
+            plotBackgroundColor: null,
+            plotBorderWidth: null,
+            plotShadow: false
+          },
+          title: {
+            text: 'Elecciones generales, 2015'
+          },
+          tooltip: {
+            pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+          },
+          plotOptions: {
+            pie: {
+              allowPointSelect: true,
+              cursor: 'pointer',
+              dataLabels: {
+                enabled: false
+              },
+              showInLegend: true
+            }
+          },
+          series: [{
+            type: 'pie',
+            name: 'Elecciones generales',
+            data: [
+            ['PP',    0.8],
+            ['PSOE',       10.5],
+            ['Izquierda Unida', 25.8],
+            ['UPyD',     4.9],
+            ['Podemos',   58.0]
+            ]
+          }]
+        });
+      });
+    </script>
+    <script type="text/javascript">
+    $(document).ready(function() {
+      var options = {
+        chart: {
+          renderTo: 'grafico3',
+          type: 'column',
+          marginRight: 130,
+          marginBottom: 25
+        },
+        title: {
+          text: 'Project Requests',
+          x: -20 //center
+        },
+        subtitle: {
+          text: '',
+          x: -20
+        },
+        xAxis: {
+          categories: []
+        },
+        yAxis: {
+          title: {
+            text: 'Requests'
+          },
+          plotLines: [{
+            value: 0,
+            width: 1,
+            color: '#808080'
+          }]
+        },
+        tooltip: {
+          formatter: function() {
+            return '<b>'+ this.series.name +'</b><br/>'+
+            this.x +': '+ this.y;
+          }
+        },
+        legend: {
+          layout: 'vertical',
+          align: 'right',
+          verticalAlign: 'top',
+          x: -10,
+          y: 100,
+          borderWidth: 0
+        }, {
+          series: []
+        }
+
+        $.getJSON("myphpname.php", function(json) {
+          options.xAxis.categories = json[0]['data'];
+          options.series[0] = json[1];
+          chart = new Highcharts.Chart(options);
+        });
+      });
+    </script>
+  </body>
+</html>

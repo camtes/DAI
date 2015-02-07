@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css">
+  <link rel="stylesheet" href="../static/css/style.css">
+  <title>Práctica 4</title>
+</head>
+<body>
+  <!-- avigation -->
+  <nav class="navbar navbar-default" role="navigation">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <h4 class="nav-h4">Práctica 4</h4>
+      </div>
+    </div>
+  </nav>
+  <!-- navigation -->
+  <!-- main -->
+  <div class="col-sm-12 divForm" id="divFormu">
+    <h3> Selecciona de qué ciudad deseas ver los tweets </h3>
+    <form class="form-horizontal formCtweets">
+      <div class="form-group">
+        <select class="btn-default" id="selectCity">
+          <option value="36.8415281,-2.4571166,70km">Almería</option>
+          <option value="36.6988071,-6.4991038,70km">Cádiz</option>
+          <option value="37.891586,-4.7844853,70km">Córdoba</option>
+          <option value="37.197014,-3.624251,70km">Granada</option>
+          <option value="37.2708679,-6.9396903,70km">Huelva</option>
+          <option value="37.7800943,-3.796865,70km">Jaén</option>
+          <option value="37.3753708,-5.9550582,70km">Sevilla</option>
+        </select>
+        <input type="submit" class="btn btn-success" value="Cargar tweets">
+      </div>
+    </form>
+  </div>
+
+  <!-- Mapa -->
+  <div id="map_canvas" class="col-sm-12 divMapa" style="min-width: 310px; height: 580px; margin: 0 auto"></div>
+
+  <!-- fin main -->
+  <!-- fin pie de pagina -->
+  <!-- Librerías -->
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+  <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.0/js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js"></script>
+  <script src="static/js/mashup.js"></script>
+</body>
+</html>

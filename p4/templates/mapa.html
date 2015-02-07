@@ -1,0 +1,162 @@
+<!--
+Autor: Carlos Campos Fuentes
+http://ccamposfuentes.es
+-->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>Mi Periodico</title>
+  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css">
+  <link rel="stylesheet" href="../static/css/style.css">
+  <style>
+    #map-canvas {
+      height: 500px;
+      width: 900px;
+      margin: 0px;
+      padding: 0px;
+      border: 1px solid black;
+    }
+
+    #panel {
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+  <header class="col-md-12">
+    <div class="col-sm-6">
+      <a href="/"> DAI - Carlos Campos</a>
+    </div>
+  </header>
+  <div class="container-fluid">
+    <section class="row">
+      <section id="col-left" class="col-md-2 col-xs-2">
+        <h5> MENU </h5>
+        <ul>
+          <li><a href="/">Inicio</a></li>
+          % if message:
+            <li><a href="/noticias">Noticias</a></li>
+            <li><a href="/graficos">Gráficos</a></li>
+            <li><a href="/mapa">Mapa</a></li>
+            <li><a href="/twitter">Twitter</a></li>
+            <li> -- </li>
+            <li><a href="/datos">Datos</a></li>
+            <li><a href="/modifica-datos">Modificar datos</a></li>
+            <li><a href="/logout"> Salir </a></li>
+          % endif
+
+        </section>
+        <section id="col-right" class="col-md-10 col-xs-10">
+          % if titulo:
+          <h1> ${titulo} </h1>
+          % endif
+
+          <div id="panel">
+            <input type="text" id="origen">
+            <input type="text" id="destino">
+            <input onclick="calcRoute();" type=button value="Calcular ruta">
+            <input onclick="ocultarMarcas();" type=button value="Ocultar marcas">
+            <input onclick="mostrarMarcas();" type=button value="Mostrar todas las marcas">
+            <input onclick="borrarMarcas();" type=button value="Eliminar marcas">
+          </div>
+
+          <div id="map-canvas"></div>
+
+
+        </section>
+      </section>
+    </div>
+    <footer class="col-md-12">
+      <p> © <a href="http://ccamposfuentes.es" target="_blank">Carlos Campos</a> - DAI - UGR </p>
+    </footer>
+
+    <!-- Librerias -->
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.0/js/bootstrap.min.js"></script>
+    <script type="text/javascript"
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA53l5xr7BEWCR5TFhwAhUvyYgQBft-zZY">
+    </script>
+    <script type="text/javascript">
+      var map;
+      var marcas = [];
+      var directionsDisplay;
+      var directionsService = new google.maps.DirectionsService();
+
+      function initialize() {
+        var granada = new google.maps.LatLng(37.1809462,-3.5922032);
+        directionsDisplay = new google.maps.DirectionsRenderer();
+
+        var mapOptions = {
+          center: granada,
+          zoom: 12
+        };
+
+        map = new google.maps.Map(document.getElementById('map-canvas'),
+        mapOptions);
+
+        directionsDisplay.setMap(map);
+        directionsDisplay.setPanel(document.getElementById('directions-panel'));
+
+        google.maps.event.addListener(map, 'click', function(event) {
+          nuevaMarca(event.latLng);
+        });
+
+        nuevaMarca(granada);
+
+      }
+
+      function nuevaMarca(location) {
+        var marca = new google.maps.Marker({
+          position: location,
+          map: map
+        });
+        marcas.push(marca);
+      }
+
+      // Sets the map on all marcas in the array.
+      function setAllMap(map) {
+        for (var i = 0; i < marcas.length; i++) {
+          marcas[i].setMap(map);
+        }
+      }
+
+      // Removes the marcas from the map, but keeps them in the array.
+      function ocultarMarcas() {
+        setAllMap(null);
+      }
+
+      // Shows any marcas currently in the array.
+      function mostrarMarcas() {
+        setAllMap(map);
+      }
+
+      // Deletes all marcas in the array by removing references to them.
+      function borrarMarcas() {
+        ocultarMarcas();
+        marcas = [];
+      }
+
+      // Funciones necesarias para calcular una ruta
+      function calcRoute() {
+        borrarMarcas();
+
+        var start = document.getElementById('origen').value;
+        var end = document.getElementById('destino').value;
+        var request = {
+          origin: start,
+          destination: end,
+          travelMode: google.maps.TravelMode.DRIVING
+        };
+        
+        directionsService.route(request, function(response, status) {
+          if (status == google.maps.DirectionsStatus.OK) {
+            directionsDisplay.setDirections(response);
+          }
+        });
+      }
+
+      google.maps.event.addDomListener(window, 'load', initialize);
+    </script>
+  </body>
+  </html>

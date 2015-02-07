@@ -1,0 +1,83 @@
+<!--
+ Autor: Carlos Campos Fuentes
+  		  http://ccamposfuentes.es
+-->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+	<meta charset="utf-8">
+	<title>Mi Periodico</title>
+	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../static/css/style.css">
+</head>
+<body>
+	<header class="col-md-12">
+		<div class="col-sm-6">
+			<a href="/"> DAI - Carlos Campos</a>
+		</div>
+	</header>
+	<div class="container-fluid">
+		<section class="row">
+			<section id="col-left" class="col-md-2 col-xs-2">
+				<h5> MENU </h5>
+				<ul>
+					<li><a href="/">Inicio</a></li>
+					% if message:
+						<li><a href="/noticias">Noticias</a></li>
+						<li><a href="/graficos">Gráficos</a></li>
+						<li><a href="/mapa">Mapa</a></li>
+						<li><a href="/twitter">Twitter</a></li>
+						<li> -- </li>
+						<li><a href="/datos">Datos</a></li>
+						<li><a href="/modifica-datos">Modificar datos</a></li>
+						<li><a href="/logout"> Salir </a></li>
+					% endif
+
+			</section>
+			<section id="col-right" class="col-md-10 col-xs-10">
+				% if titulo:
+					<h1> ${titulo} </h1>
+				% endif
+
+				% if lista:
+					<h2> Titulares </h2>
+					% for i in lista:
+						<hr>
+						<p> ${i} </p>
+					% endfor
+				% endif
+
+				% if not message:
+					<form name="login" method="POST">
+						% if message:
+							${message}
+						% endif
+
+						% if form:
+							${form.render()}
+						% endif
+					</form>
+				% endif
+
+				% if content:
+					${content}
+				% endif
+
+				% if formEdit:
+					<form method="POST" name="editDataForm">
+						${formEdit}
+					</form>
+				% endif
+			</section>
+		</section>
+	</div>
+	<footer class="col-md-12">
+		<p> © <a href="http://ccamposfuentes.es" target="_blank">Carlos Campos</a> - DAI - UGR </p>
+	</footer>
+
+	<!-- Librerias -->
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+  <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.0/js/bootstrap.min.js"></script>
+	<script src="http://code.highcharts.com/highcharts.js"></script>
+</body>
+</html>

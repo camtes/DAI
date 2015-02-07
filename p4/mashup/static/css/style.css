@@ -1,0 +1,27 @@
+body {
+  background: #fdfdfd;
+}
+.navbar-default {
+  background: #1dc3c3;
+  border: none;
+  border-bottom: 1px solid #cecece;
+  height: 80px;
+  border-radius: 0;
+  margin-bottom: 0;
+}
+
+.form-horizontal .form-group {
+  margin: 20px auto;
+  float: right;
+}
+
+h3 {
+  float: left;
+  color: #717171;
+  font-size: 19px;
+}
+
+select {
+  size: 4;
+  style: 'btn-info';
+}
